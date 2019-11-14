@@ -124,8 +124,6 @@ public class ScreenViewService extends Service implements SurfaceHolder.Callback
         }
     };
 
-
-
     /**
      * 更新来电
      */
