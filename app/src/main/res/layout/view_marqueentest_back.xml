@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.etv.view.MarqueeView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mMarqueeView"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    app:direction="left"
+    app:isRepeat="true"
+    app:speed="100"
+    app:startPoint="end"
+    app:textSize="16sp"
+    app:textcolor="@color/colorAccent" />

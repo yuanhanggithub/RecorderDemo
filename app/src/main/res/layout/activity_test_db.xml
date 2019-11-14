@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/btn_ad_task"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="btn_ad_task" />
+
+        <Button
+            android:id="@+id/btn_ad_pro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="btn_ad_pro" />
+
+        <Button
+            android:id="@+id/btn_ad_cp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="btn_ad_cp" />
+
+        <Button
+            android:id="@+id/btn_ad_mp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="btn_ad_mp" />
+
+        <Button
+            android:id="@+id/btn_ad_txt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="btn_ad_txt" />
+    </LinearLayout>
+
+
+    <Button
+        android:id="@+id/btn_query_task"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="btn_query_task" />
+
+    <Button
+        android:id="@+id/btn_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="btn_text" />
+
+    <Button
+        android:id="@+id/btn_clear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="清理数据库" />
+
+</LinearLayout>

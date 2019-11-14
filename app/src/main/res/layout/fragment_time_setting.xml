@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="400dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:layout_marginTop="48dp"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/dev_time_txt_style"
+                android:layout_centerVertical="true"
+                android:text="@string/automatic_date_determination" />
+
+            <CheckBox
+                android:id="@+id/check_open"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:textSize="20sp" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dimen_20"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/dev_time_txt_style"
+                android:text="@string/date" />
+
+            <Button
+                android:id="@+id/bt_date"
+                style="@style/dev_time_btn_style"
+                android:text="2018-12-05" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/dev_time_txt_style"
+                android:text="@string/time" />
+
+            <Button
+                android:id="@+id/bt_time"
+                style="@style/dev_time_btn_style"
+                android:text="13:40" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/dev_time_txt_style"
+                android:text="@string/timeZone" />
+
+            <Button
+                android:id="@+id/bt_time_zone"
+                style="@style/dev_time_btn_style"
+                android:text="@string/timeZone_beijin" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>
+

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <array name="permissionNames">
+        <item>@string/permission_storage</item>
+        <item>@string/permission_location</item>
+        <item>@string/permission_camera</item>
+    </array>
+
+    <declare-styleable name="ButtonView">
+        <attr name="backgroundColor" format="reference"></attr>
+        <attr name="btn_background" format="reference"></attr>
+        <attr name="text" format="string"></attr>
+    </declare-styleable>
+    <string-array name="Language">
+        <item>中文</item>
+        <item>English</item>
+    </string-array>
+    <string-array name="safe_choise">
+        <item>无</item>
+        <item>WEP</item>
+        <item>WEP/WPA2 PSK</item>
+        <item>802.1x EAP</item>
+        <item>WAPI PSK</item>
+        <item>WAPI CERT</item>
+    </string-array>
+
+    <!-- 17国语言 -->
+
+    <string-array name="gen_language">
+        <item>中文</item>
+        <item>英文(English)</item>
+        <item>日语(日本語)</item>
+        <item>韩语(한국어)</item>
+        <item>法语(Français)</item>
+        <item>俄语(русский)</item>
+        <item>德语(deutsch)</item>
+        <item>西班牙语(Español)</item>
+        <item>葡萄牙语(Português)</item>
+        <item>意大利语(In Italiano)</item>
+        <item>阿拉伯语(العربية)</item>
+        <item>泰语(ภาษาไทย)</item>
+        <item>希腊语(Ελληνική γλώσσα)</item>
+        <item>荷兰语(De Nederlandse)</item>
+        <item>波兰语(w języku polskim)</item>
+        <item>丹麦语(dansk)</item>
+        <item>芬兰语(suomen)</item>
+        <item>捷克语(česky)</item>
+        <item>罗马尼亚语(în limba română)</item>
+        <item>瑞典语(svenska)</item>
+        <item>匈牙利语(magyar)</item>
+    </string-array>
+
+    <string-array name="list_language">
+        <item>中文</item>
+        <item>英文</item>
+        <item>日语</item>
+        <item>韩语</item>
+        <item>法语</item>
+        <item>俄语</item>
+        <item>德语</item>
+        <item>西班牙语</item>
+        <item>葡萄牙语</item>
+        <item>意大利语</item>
+        <item>阿拉伯语</item>
+        <item>泰语</item>
+        <item>希腊语</item>
+        <item>荷兰语</item>
+        <item>波兰语</item>
+        <item>丹麦语</item>
+        <item>芬兰语</item>
+        <item>捷克语</item>
+        <item>罗马尼亚语</item>
+        <item>瑞典语</item>
+        <item>匈牙利语</item>
+    </string-array>
+
+
+</resources>

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/tv_show_time"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="@dimen/dimen_10"
+            android:orientation="horizontal"
+            android:paddingLeft="@dimen/dimen_20"
+            android:paddingRight="@dimen/dimen_20">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1.0"
+                android:gravity="center"
+                android:text="开机时间"
+                android:textColor="@color/grey"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1.0"
+                android:gravity="center"
+                android:text="关机时间"
+                android:textColor="@color/grey"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/tv_mon"
+                style="@style/power_on_off_tv"
+                android:text="周一" />
+
+            <TextView
+                android:id="@+id/tv_tue"
+                style="@style/power_on_off_tv"
+                android:text="周二" />
+
+            <TextView
+                android:id="@+id/tv_wed"
+                style="@style/power_on_off_tv"
+                android:text="周三" />
+
+            <TextView
+                android:id="@+id/tv_thu"
+                style="@style/power_on_off_tv"
+                android:text="周四" />
+
+            <TextView
+                android:id="@+id/tv_fri"
+                style="@style/power_on_off_tv"
+                android:text="周五" />
+
+            <TextView
+                android:id="@+id/tv_sat"
+                style="@style/power_on_off_tv"
+                android:text="周六" />
+
+            <TextView
+                android:id="@+id/tv_sun"
+                style="@style/power_on_off_tv"
+                android:text="周日" />
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/lv_power"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/dimen_20" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/iv_no_data"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@mipmap/no_data" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="暂无数据"
+            android:textColor="@color/grey"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_show_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="@dimen/dimen_10"
+        android:layout_marginRight="@dimen/dimen_15"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
+</RelativeLayout>

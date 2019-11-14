@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black">
+
+    <LinearLayout
+        android:layout_width="500dp"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:padding="@dimen/dimen_20">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/dimen_40">
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/dimen_40"
+                android:gravity="center_vertical"
+                android:text="检测升级"
+                android:textColor="@color/grey"
+                android:textSize="@dimen/text_20" />
+
+            <Button
+                android:id="@+id/btn_cacel_down"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:background="@drawable/btn_fouces_error_style"
+                android:paddingLeft="@dimen/dimen_15"
+                android:paddingRight="@dimen/dimen_15"
+                android:text="取消下载"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_16" />
+
+
+        </RelativeLayout>
+
+
+        <View
+            style="@style/view_line"
+            android:layout_marginTop="@dimen/dimen_5" />
+
+        <!--当前下载的-->
+        <LinearLayout
+            android:id="@+id/lin_down_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical"
+            android:padding="@dimen/dimen_10">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tv_name_down"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="下载状态"
+                    android:textColor="@color/grey" />
+
+                <TextView
+                    android:id="@+id/tv_progress_down"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginLeft="@dimen/dimen_15"
+                    android:layout_toEndOf="@+id/tv_name_down"
+                    android:text="下载进度"
+                    android:textColor="@color/grey" />
+
+                <TextView
+                    android:id="@+id/tv_speed_down"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:text="下载速度"
+                    android:textColor="@color/grey" />
+            </RelativeLayout>
+
+            <ProgressBar
+                android:id="@+id/progress_down"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:layout_marginTop="@dimen/dimen_15" />
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/lv_update_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/rect_circle" />
+    </LinearLayout>
+
+</RelativeLayout>

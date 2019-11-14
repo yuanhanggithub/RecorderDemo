@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingTop="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="@dimen/eth_title_distace"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="@string/network_mode"
+            android:textColor="@color/app_txt_color"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/sp_network_mode"
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/btn_fouces_style"
+            android:drawableRight="@mipmap/right"
+            android:gravity="center"
+            android:focusable="true"
+            android:paddingRight="30dp"
+            android:text="@string/dynamic_acquisition"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <View
+        style="@style/setting_current_view_style"
+        android:layout_marginTop="10dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/internet_txt"
+            android:text="@string/mac_address" />
+
+        <TextView
+            android:id="@+id/tv_mac_address"
+            style="@style/dev_time_txt_style"
+            android:layout_width="match_parent"
+            android:text="@string/mac_address" />
+    </LinearLayout>
+
+    <View
+        style="@style/setting_current_view_style"
+        android:layout_marginTop="10dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/internet_txt"
+            android:text="@string/ip_address" />
+
+        <TextView
+            android:id="@+id/tv_ip_address"
+            style="@style/dev_time_txt_style"
+            android:text="@string/ip_address" />
+    </LinearLayout>
+
+    <View
+        style="@style/setting_current_view_style"
+        android:layout_marginTop="10dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/internet_txt"
+            android:text="@string/subnet_mask" />
+
+        <TextView
+            android:id="@+id/tv_subnet_mask"
+            style="@style/dev_time_txt_style"
+            android:text="@string/subnet_mask" />
+    </LinearLayout>
+
+    <View
+        style="@style/setting_current_view_style"
+        android:layout_marginTop="10dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/internet_txt"
+            android:text="@string/gateway" />
+
+        <TextView
+            android:id="@+id/tv_gateway"
+            style="@style/dev_time_txt_style"
+            android:text="@string/gateway" />
+    </LinearLayout>
+
+    <View
+        style="@style/setting_current_view_style"
+        android:layout_marginTop="10dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/internet_txt"
+            android:text="@string/dns1" />
+
+        <TextView
+            android:id="@+id/tv_dns1"
+            style="@style/dev_time_txt_style"
+            android:text="@string/dns1" />
+    </LinearLayout>
+
+    <View
+        style="@style/setting_current_view_style"
+        android:layout_marginTop="10dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            style="@style/internet_txt"
+            android:text="@string/dns2" />
+
+        <TextView
+            android:id="@+id/tv_dns2"
+            style="@style/dev_time_txt_style"
+            android:text="@string/dns2" />
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/back_ground">
+
+    <LinearLayout
+        android:id="@+id/lin_exit"
+        style="@style/setting_exit_layout">
+
+        <ImageView style="@style/setting_exit_image" />
+
+        <TextView style="@style/setting_exit_txt" />
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/setting_fragment_lin"
+        android:layout_centerVertical="true">
+
+        <TextView
+            android:id="@+id/tv_dev_setting"
+            style="@style/setting_title_desc" />
+
+        <View style="@style/setting_current_view_style" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="20dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginTop="10dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1.2"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/linear_time_setting"
+                    style="@style/dev_lay_lin">
+
+                    <ImageView
+                        style="@style/dev_lay_image"
+                        android:src="@drawable/time" />
+
+                    <TextView
+                        style="@style/dev_lay_txt"
+                        android:text="@string/time_setting" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linear_version_information"
+                    style="@style/dev_lay_lin">
+
+                    <ImageView
+                        style="@style/dev_lay_image"
+                        android:src="@drawable/information" />
+
+                    <TextView
+                        style="@style/dev_lay_txt"
+                        android:text="语言设置" />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/linear_instructions"
+                    style="@style/dev_lay_lin">
+
+                    <ImageView
+                        style="@style/dev_lay_image"
+                        android:src="@drawable/storage" />
+
+                    <TextView
+                        style="@style/dev_lay_txt"
+                        android:text="定时开关机" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linear_storage"
+                    style="@style/dev_lay_lin">
+
+                    <ImageView
+                        style="@style/dev_lay_image"
+                        android:src="@drawable/instructions" />
+
+                    <TextView
+                        style="@style/dev_lay_txt"
+                        android:text="@string/storage" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/news_content_layout"
+                style="@style/setting_frame_layout"
+                android:nextFocusLeft="@id/linear_time_setting" />
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

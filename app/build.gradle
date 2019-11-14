@@ -1,0 +1,62 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 26
+//    buildToolsVersion '28.0.2'
+    useLibrary 'org.apache.http.legacy'  //Xutil的申明
+
+    defaultConfig {
+        applicationId "com.ys.etv"
+        minSdkVersion 17
+        targetSdkVersion 25
+        versionCode 17
+        versionName "V2.1.0.5"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        // abiFilters 'armeabi', 'armeabi-v7a'    pdf使用没问题
+        // abiFilters 'armeabi', 'armeabi-v7a', 'armeabi-v8a', 'arm64-v8a'    百度地图需要
+        ndk {
+            abiFilters 'armeabi', 'armeabi-v7a'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    //    compile 'com.android.support:appcompat-v7:23.+'
+    testImplementation 'junit:junit:4.12'
+    //网络请求框架
+    implementation 'com.squareup.okhttp3:okhttp:3.8.1'
+    //xutil下载框架
+    implementation files('libs/xUtils-2.6.14.jar')
+    //JSON解析框架
+    implementation 'com.google.code.gson:gson:2.7'
+    //图片加载框架
+    implementation 'com.github.bumptech.glide:glide:3.7.0'
+    implementation 'jp.wasabeef:glide-transformations:2.0.2'
+    implementation 'com.android.support:recyclerview-v7:23.2.1'
+    implementation files('libs/rkapi.jar')
+    implementation files('libs/axis-1.4.jar')
+}

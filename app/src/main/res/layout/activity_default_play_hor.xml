@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/play_bgg"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+
+        <com.etv.util.banner.code.Banner
+            android:id="@+id/banner_default"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3.0" />
+
+        <com.etv.view.video.VideoViewBitmap
+            android:id="@+id/video_view"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="7.0" />
+
+    </LinearLayout>
+
+    <AbsoluteLayout
+        android:id="@+id/lay_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+    </AbsoluteLayout>
+</RelativeLayout>

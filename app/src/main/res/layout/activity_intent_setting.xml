@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/relative"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/back_ground">
+
+
+    <LinearLayout
+        android:id="@+id/lin_exit"
+        style="@style/setting_exit_layout">
+
+        <ImageView style="@style/setting_exit_image" />
+
+        <TextView style="@style/setting_exit_txt" />
+    </LinearLayout>
+
+    <LinearLayout style="@style/setting_fragment_lin">
+
+        <TextView
+            style="@style/setting_title_desc"
+            android:text="@string/intent_setting" />
+
+        <View style="@style/setting_current_view_style" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="20dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <!--工作模式-->
+                <LinearLayout
+                    android:id="@+id/linear_operating_mode"
+                    style="@style/dev_lay_lin">
+
+
+                    <ImageView
+                        style="@style/dev_lay_image"
+                        android:src="@drawable/moshi" />
+
+                    <TextView
+                        style="@style/dev_lay_txt"
+                        android:text="@string/operating_mode" />
+                </LinearLayout>
+
+                <!--===服务器======-->
+                <LinearLayout
+                    android:id="@+id/linear_service"
+                    style="@style/dev_lay_lin">
+
+                    <ImageView
+                        style="@style/dev_lay_image"
+                        android:src="@drawable/service" />
+
+                    <TextView
+                        style="@style/dev_lay_txt"
+                        android:text="@string/server" />
+                </LinearLayout>
+
+                <!--===========以太网-=============-->
+                <LinearLayout
+                    android:id="@+id/linear_ethernet"
+                    style="@style/dev_lay_lin">
+
+                    <ImageView
+                        style="@style/dev_lay_image"
+                        android:src="@drawable/intent1" />
+
+                    <TextView
+                        style="@style/dev_lay_txt"
+                        android:text="@string/ethernet" />
+                </LinearLayout>
+                <!--wifi设置-->
+                <LinearLayout
+                    android:id="@+id/linear_wifi_settings"
+                    style="@style/dev_lay_lin">
+
+                    <ImageView
+                        style="@style/dev_lay_image"
+                        android:src="@drawable/wifi1" />
+
+                    <TextView
+                        style="@style/dev_lay_txt"
+                        android:text="@string/wifi_settings" />
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/news_content_layout"
+                style="@style/setting_frame_layout"
+                android:nextFocusLeft="@+id/linear_ethernet" />
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/test_black"
+    android:orientation="vertical">
+
+    <com.etv.view.TopBarView
+        android:id="@+id/top_file_list"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        app:backColor="@color/colorPrimary"
+        app:leftShow="false"
+        app:rightShow="false"
+        app:title="IP 地址" />
+
+    <GridView
+        android:id="@+id/lv_file"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/top_file_list"
+        android:horizontalSpacing="15dp"
+        android:listSelector="@drawable/rect_circle_app"
+        android:numColumns="8"
+        android:padding="20dp" />
+
+
+</RelativeLayout>

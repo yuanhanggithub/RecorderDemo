@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+        android:id="@+id/camera_view"
+        layout="@layout/camera_view" />
+
+    <TextView
+        android:id="@+id/tv_tip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:gravity="center"
+        android:text="@string/insert_vid_tip"
+        android:textColor="#393939"
+        android:textSize="20sp" />
+
+    <VideoView
+        android:id="@+id/vv_tip"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:layout_gravity="center"
+        android:visibility="visible" />
+
+    <Button
+    android:id="@+id/btn_start"
+    android:layout_width="80dp"
+    android:layout_height="80dp"
+    android:layout_gravity="bottom|center"
+    android:layout_marginBottom="5dp"
+    android:background="@mipmap/button_bg"
+    android:text="@string/insert_vid_start"
+    android:textColor="#ffffff"
+    android:textSize="20sp"
+    android:visibility="visible" />
+
+
+    <View
+        android:id="@+id/view_line"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_gravity="bottom"
+        android:background="#ff1f388c" />
+
+</FrameLayout>
