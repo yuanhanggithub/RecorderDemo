@@ -68,4 +68,61 @@ public class SharedPerManager {
     public static void setUniquePsuedoID(String onlycode) {
         EtvApplication.getInstance().saveData("onlycode", onlycode);
     }
+
+    /**
+     * 获取第一个电话号码
+     * @return
+     */
+    public static String getPhoneNum1() {
+        return (String) EtvApplication.getInstance().getData("phonrNum1", "110");
+    }
+
+    public static void setPhoneNum1(String paramString) {
+        EtvApplication.getInstance().saveData("phonrNum1", paramString);
+    }
+
+    public static String getPhoneNum2() {
+        return (String) EtvApplication.getInstance().getData("phonrNum1", "119");
+    }
+
+    public static void setPhoneNum2(String paramString) {
+        EtvApplication.getInstance().saveData("phonrNum1", paramString);
+    }
+
+    public static String getPassword() {
+        return (String) EtvApplication.getInstance().getData("password", "2580");
+    }
+
+    public static void setPassword(String paramString) {
+        EtvApplication.getInstance().saveData("password", paramString);
+    }
+
+
+    /**
+     * 获取第一个电话号码姓名
+     * @return
+     */
+    public static String getPhoneName1() {
+        return (String) EtvApplication.getInstance().getData("phonrName1", "110报警");
+    }
+
+    public static void setPhoneName1(String paramString) {
+        EtvApplication.getInstance().saveData("phonrName1", paramString);
+    }
+
+    public static String getPhoneName2() {
+        return (String) EtvApplication.getInstance().getData("phonrName2", "119火警");
+    }
+
+    public static void setPhoneName2(String paramString) {
+        EtvApplication.getInstance().saveData("phonrName2", paramString);
+    }
+
+    public static String getPhoneName() {
+        return (String) EtvApplication.getInstance().getData("phonrName3", "管理员");
+    }
+
+    public static void setPhoneName(String paramString) {
+        EtvApplication.getInstance().saveData("phonrName3", paramString);
+    }
 }

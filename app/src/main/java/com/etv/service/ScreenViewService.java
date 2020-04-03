@@ -1,12 +1,16 @@
 package com.etv.service;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.hardware.Camera;
 import android.media.AudioManager;
 import android.media.MediaRecorder;
@@ -15,11 +19,14 @@ import android.os.Binder;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
 import android.os.storage.StorageManager;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
@@ -27,20 +34,26 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.android.internal.telephony.ITelephony;
+import com.etv.activity.SettingActivity;
 import com.etv.config.AppInfo;
 import com.etv.util.Biantai;
 import com.etv.util.FileUtil;
+import com.etv.util.GpioUtils;
 import com.etv.util.MyLog;
 import com.etv.util.PlayUtil;
 import com.etv.util.SharedPerManager;
 import com.etv.util.ViewSizeChange;
 import com.etv.util.system.SystemManagerUtil;
+import com.etv.view.MyToastView;
 import com.ys.etv.R;
 
 import java.io.File;
@@ -56,6 +69,7 @@ import java.util.TimerTask;
 
 import static com.etv.config.AppInfo.SD_INSERT;
 import static com.etv.config.AppInfo.SD_PULLOUT;
+import static com.etv.config.AppInfo.START_SETTING;
 
 /***
  * 录像悬浮窗
@@ -63,23 +77,59 @@ import static com.etv.config.AppInfo.SD_PULLOUT;
  * 2：开始打电话，停止录像，压缩时视频
  */
 
-public class ScreenViewService extends Service implements SurfaceHolder.Callback {
+public class ScreenViewService extends Service implements SurfaceHolder.Callback, View.OnClickListener {
 
     private static final String TAG = "ScreenViewService";
-    private static final int EXIT_APP =0X11 ;
+    private static final int EXIT_APP = 0X11;
     private static String FILEA_PATH;
     private String url_file;
     private WindowManager mWindowManager;
     private WindowManager.LayoutParams mWmParams;
     private boolean isCallIng = false;   //是否正在通话
     private boolean isCallFrom = false;  //来电
+    private int number = 0;     //拿起听筒计算数量
     public static final int TYPE = 1;
     private Camera mCamera;
     private AudioManager audioManager;
+    private boolean earpiece =false;
+    private Handler handler2 = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+                    String value = GpioUtils.getGpioValue(138);
+                    Log.i("ScreenViewService", "value=" + value+"msg="+msg.what);
+                    if (value.equals("1")) {
+                        if (number >= 10 && !isCallIng) {
+                            if (earpiece)
+                            setViewChange(false);
+                            earpiece = false;
+                        } else {
+                            number++;
+                            if (!earpiece)
+                            setViewChange(true);
+                            earpiece = true;
+                        }
 
+                    } else {
+                        number = 0;
+                        if (earpiece) {
+                            setViewChange(false);
+                            if (!isCallFrom) {
+                                endPhone(ScreenViewService.this, (TelephonyManager) getApplicationContext().getSystemService(Service.TELEPHONY_SERVICE));
+                                isCallIng = false;
+                            }
+                            tv_1.setText(SharedPerManager.getPhoneName1());
+                            tv_2.setText(SharedPerManager.getPhoneName2());
+                            tv_3.setText(SharedPerManager.getPhoneName());
+                            earpiece = false;
+                        }
+                    }
+            handler2.sendEmptyMessageDelayed(0x10, 1000);
+        }
+    };
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(final Context context, Intent intent) {
             String action = intent.getAction();
             MyLog.cdl("==========BroadcastReceiver======" + action);
             if (action.equals(AppInfo.ONE_KEY_POLICE_BROAD)) {  //一键报警功能
@@ -96,12 +146,12 @@ public class ScreenViewService extends Service implements SurfaceHolder.Callback
                 updateCallView();
             } else if (action.equals(AppInfo.CALL_TO_PHONE_RING)) { //去电
                 isCallIng = true;
-            }else if (action.equals(AppInfo.HAND_UP_LONG_PHONE)) { //长按挂掉电话
-                Log.i(TAG,"HAND_UP_LONG_PHONE=="+isCallIng);
-                if (isCallIng){
+            } else if (action.equals(AppInfo.HAND_UP_LONG_PHONE)) { //长按挂掉电话
+                Log.i(TAG, "HAND_UP_LONG_PHONE==" + isCallIng);
+                if (isCallIng) {
                     setViewChange(false);
                     clickBunNum = 0;
-                    endPhone(ScreenViewService.this,(TelephonyManager) context.getSystemService(Service.TELEPHONY_SERVICE));
+                    endPhone(ScreenViewService.this, (TelephonyManager) context.getSystemService(Service.TELEPHONY_SERVICE));
                 }
 //                else {
 //                    setViewChange(false);
@@ -110,19 +160,167 @@ public class ScreenViewService extends Service implements SurfaceHolder.Callback
 //                    stopRecorder();
 //                    Toast.makeText(ScreenViewService.this,"视频录制停止",Toast.LENGTH_SHORT).show();
 //                }
-            }else if (action.equals(SD_PULLOUT)){
-            Log.i("BootBroadcastReceiver","action========"+SD_PULLOUT);
-            if (!FileUtil.getPath(FILEA_PATH))
-                openCamera();
-            }else if (action.equals(SD_INSERT)){
-                if (mRecorder==null) {
+            } else if (action.equals(SD_PULLOUT)) {
+                Log.i("BootBroadcastReceiver", "action========" + SD_PULLOUT);
+                if (!FileUtil.getPath(FILEA_PATH))
+                    openCamera();
+            } else if (action.equals(SD_INSERT)) {
+                if (mRecorder == null) {
                     mCamera.release();
                     mCamera = null;
                     startRecord();
                 }
-        }
+            } else if (action.equals(AppInfo.EXIT_APP)) {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext())
+                        .setTitle("是否登录!!!")
+//                        .setIcon(android.R.drawable.ic_dialog_info)
+                        .setPositiveButton("登录",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog,
+                                                        int whichButton) {
+                                        showDialog("请输入密码",0);
+                                    }
+                                })
+                        .setNegativeButton("退出",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog,
+                                                        int whichButton) {
+                                        dialog.dismiss();
+                                        stopSelf(); // 先stopSelf，确保killProcess后service不会重启
+                                        android.os.Process.killProcess(android.os.Process.myPid());
+                                        return;
+
+                                    }
+                                });
+
+
+//                AlertDialog.Builder builder  = new AlertDialog.Builder(getApplicationContext());
+//                builder.setPositiveButton("登录", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialogInterface, int i) {
+//                        showDialog("请输入密码",0);
+//                    }
+//                });
+//                builder.setNegativeButton("退出", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialogInterface, int i) {
+//                        Intent intent1 = new Intent();
+//                                        intent1.setAction(AppInfo.EXIT_APP);
+//                                        context.sendBroadcast(intent1);
+//                    }
+//                });
+//                final AlertDialog alertDialog = builder.create();
+//                TextView title = new TextView(getApplicationContext());
+//                title.setText("是否登录!");
+//                title.setPadding(10, 30, 10, 10);
+//                title.setGravity(Gravity.CENTER);
+//                title.setTextSize(18);
+//                title.setTextColor(Color.BLACK);
+//                alertDialog.setCustomTitle(title);
+//                alertDialog.setCancelable(false);
+//                alertDialog.getWindow().setType(
+//                        (WindowManager.LayoutParams.TYPE_SYSTEM_ALERT));
+//                Handler handler = new Handler(Looper.getMainLooper());
+//                handler.post(new Runnable() {
+//                    public void run() {
+//                        alertDialog.show();
+//                    }
+//                });
+//                Button button = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+//                LinearLayout.LayoutParams cancelBtnPara = (LinearLayout.LayoutParams) button.getLayoutParams();
+//                //设置按钮的大小
+//                cancelBtnPara.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+//                cancelBtnPara.width = LinearLayout.LayoutParams.MATCH_PARENT;
+//                //设置文字居中
+//                cancelBtnPara.gravity = Gravity.CENTER;
+//                //设置按钮左上右下的距离
+//                cancelBtnPara.setMargins(100, 20, 100, 20);
+//                button.setLayoutParams(cancelBtnPara);
+//                button.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.intent_setting_down));
+//                button.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.white));
+//                button.setTextSize(16);
+
+
+                final AlertDialog dialog = builder.create();
+                dialog.getWindow().setType(
+                        (WindowManager.LayoutParams.TYPE_SYSTEM_ALERT));
+                Handler handler = new Handler(Looper.getMainLooper());
+                handler.post(new Runnable() {
+                    public void run() {
+                        dialog.show();
+                    }
+                });
+            }
         }
     };
+
+    private void showDialog(String title, final int id) {
+        final EditText et = new EditText(ScreenViewService.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext())
+                .setIcon(android.R.drawable.ic_dialog_info)
+                .setTitle(title)
+                .setView(et)
+                .setPositiveButton("确定",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,
+                                                int whichButton) {
+                                switch (id){
+                                    case 0:
+                                        if (et.getText().toString().trim().equals(SharedPerManager.getPassword())) {
+                                            createSettingView();
+                                        } else {
+                                            MyToastView.getInstance().Toast(ScreenViewService.this, "密码错误，请重新输入！！！");
+                                        }
+                                        break;
+                                    case R.id.tv_change1:
+                                        tv_change1.setText(et.getText().toString().trim());
+                                        SharedPerManager.setPhoneName1(et.getText().toString().trim());
+                                        break;
+                                    case R.id.tv_change2:
+                                        tv_change2.setText(et.getText().toString().trim());
+                                        SharedPerManager.setPhoneName2(et.getText().toString().trim());
+                                        break;
+                                    case R.id.tv_change3:
+                                        tv_change3.setText(et.getText().toString().trim());
+                                        SharedPerManager.setPhoneName(et.getText().toString().trim());
+                                        break;
+                                    case R.id.tv_phone1:
+                                        tv_phone1.setText(et.getText().toString().trim());
+                                        SharedPerManager.setPhoneNum1(et.getText().toString().trim());
+                                        break;
+                                    case R.id.tv_phone2:
+                                        tv_phone2.setText(et.getText().toString().trim());
+                                        SharedPerManager.setPhoneNum2(et.getText().toString().trim());
+                                        break;
+                                    case R.id.tv_phone3:
+                                        tv_phone3.setText(et.getText().toString().trim());
+                                        SharedPerManager.setPhoneNum(et.getText().toString().trim());
+                                        break;
+                                    case R.id.tv_change_ps:
+                                        tv_change_ps.setText(et.getText().toString().trim());
+                                        SharedPerManager.setPassword(et.getText().toString().trim());
+                                        break;
+                                }
+                            }
+                        })
+                .setNegativeButton("取消",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,
+                                                int whichButton) {
+                                dialog.dismiss();
+                            }
+                        });
+        final AlertDialog dialog = builder.create();
+        dialog.getWindow().setType(
+                (WindowManager.LayoutParams.TYPE_SYSTEM_ALERT));
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            public void run() {
+                dialog.show();
+            }
+        });
+    }
 
     /**
      * 更新来电
@@ -157,7 +355,7 @@ public class ScreenViewService extends Service implements SurfaceHolder.Callback
         if (clickBunNum == NUM_DEFAULT) {  //播放提示音
             setViewChange(true);
             playUtil.playMusic();
-                tv_desc_show.setText("确认报警,请再按一次");
+            tv_desc_show.setText("确认报警,请再按一次");
             startTimer();
             clickBunNum++;
         } else if (clickBunNum == NUM_PLAY_NOTIFY) { //开始拨号
@@ -172,7 +370,7 @@ public class ScreenViewService extends Service implements SurfaceHolder.Callback
             }
             playUtil.stopMusic();
             tv_desc_show.setText("正在呼叫: 110");
-            makePhoneToPolice();
+            makePhoneToPolice(SharedPerManager.getPhoneNum());
             clickBunNum++;
         }
 //        else if (clickBunNum == NUM_PLAY_CALLING) {
@@ -186,6 +384,12 @@ public class ScreenViewService extends Service implements SurfaceHolder.Callback
         super.onCreate();
         createFloatView();
         initReceiver();
+        GpioUtils.upgradeRootPermissionForExport();
+        if (GpioUtils.exportGpio(138)) {
+            GpioUtils.upgradeRootPermissionForGpio(138);
+            GpioUtils.setGpioDirection(138, 1);
+        }
+        handler2.sendEmptyMessageDelayed(0x10, 1000);
     }
 
     View viewPop;
@@ -200,7 +404,7 @@ public class ScreenViewService extends Service implements SurfaceHolder.Callback
         mWmParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
         mWmParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
         viewPop = LayoutInflater.from(getApplication()).inflate(R.layout.view_camera_pop, null);
-        audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+//        audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
         initView(viewPop);
 //        viewPop.setOnKeyListener(new View.OnKeyListener() {
 //            @Override
@@ -218,12 +422,23 @@ public class ScreenViewService extends Service implements SurfaceHolder.Callback
     private MediaRecorder mRecorder;
     private SurfaceHolder mSurfaceHolder;
     private RelativeLayout rela_view, rela_bgg;
-    private TextView tv_desc_show;
+    private TextView tv_desc_show, tv_1, tv_2, tv_3;
 
     private void initView(View viewPop) {
         tv_desc_show = (TextView) viewPop.findViewById(R.id.tv_desc_show);
         rela_bgg = (RelativeLayout) viewPop.findViewById(R.id.rela_bgg);
         rela_view = (RelativeLayout) viewPop.findViewById(R.id.rela_view);
+
+
+        tv_1 = viewPop.findViewById(R.id.tv_1);
+        tv_2 = viewPop.findViewById(R.id.tv_2);
+        tv_3 = viewPop.findViewById(R.id.tv_3);
+        tv_1.setText(SharedPerManager.getPhoneName1());
+        tv_2.setText(SharedPerManager.getPhoneName2());
+        tv_3.setText(SharedPerManager.getPhoneName());
+        tv_1.setOnClickListener(this);
+        tv_2.setOnClickListener(this);
+        tv_3.setOnClickListener(this);
 //        setViewChange(true);
         rela_bgg.setVisibility(View.GONE);
         ViewSizeChange.setGridViewSizeSmall(rela_view);
@@ -243,18 +458,18 @@ public class ScreenViewService extends Service implements SurfaceHolder.Callback
         isSizeBig = isBig;
         if (isBig) {
             rela_bgg.setVisibility(View.VISIBLE);
-            ViewSizeChange.setGridViewSizeBig(ScreenViewService.this,rela_view);
-            int max = audioManager.getStreamMaxVolume( AudioManager.STREAM_MUSIC );
-            int current = audioManager.getStreamVolume( AudioManager.STREAM_MUSIC );
-            Log.i("yuanhang","max="+max+"/"+"current="+current);
-            SharedPerManager.setNumber(current);
-            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,max,0);
+            ViewSizeChange.setGridViewSizeBig(ScreenViewService.this, rela_view);
+//            int max = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+//            int current = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+//            Log.i("yuanhang", "max=" + max + "/" + "current=" + current);
+//            SharedPerManager.setNumber(current);
+//            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, max, 0);
         } else {
             Intent intent = new Intent();
             intent.setAction(AppInfo.SHRINK_WINDOW);
             sendBroadcast(intent);
-            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,SharedPerManager.getNumber(),0);
-            Log.i("yuanhang","SharedPerManager.getNumber()="+SharedPerManager.getNumber());
+//            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, SharedPerManager.getNumber(), 0);
+//            Log.i("yuanhang", "SharedPerManager.getNumber()=" + SharedPerManager.getNumber());
             handler.sendEmptyMessageDelayed(VIEW_CHANGE_SMALL_POSYLY, 2000);
         }
     }
@@ -277,8 +492,8 @@ public class ScreenViewService extends Service implements SurfaceHolder.Callback
 //                Date date = new Date(System.currentTimeMillis());
 //                String data = simpleDateFormat.format(date);
                 File file = new File(FILEA_PATH + "/videokit/");
-                Log.i("yuanang","FILEA_PATH=="+FILEA_PATH);
-                FileUtil.execFor7("chmod 777 "+FILEA_PATH);
+                Log.i("yuanang", "FILEA_PATH==" + FILEA_PATH);
+                FileUtil.execFor7("chmod 777 " + FILEA_PATH);
                 if (!file.exists()) {
                     file.mkdirs();
                 }
@@ -314,7 +529,7 @@ public class ScreenViewService extends Service implements SurfaceHolder.Callback
                 return;
             }
             initCamdera();
-                       // Recording is now started
+            // Recording is now started
         } catch (Exception e) {
             MyLog.e("cdl", "====录制异常===" + e.toString());
             e.printStackTrace();
@@ -331,7 +546,7 @@ public class ScreenViewService extends Service implements SurfaceHolder.Callback
     public void surfaceCreated(SurfaceHolder holder) {
         mSurfaceHolder = holder;
         startRecord();
-        handler.sendEmptyMessageDelayed(START_KINESCOPE, 1000 * 60*60);
+        handler.sendEmptyMessageDelayed(START_KINESCOPE, 1000 * 60 * 60);
     }
 
     @Override
@@ -352,6 +567,7 @@ public class ScreenViewService extends Service implements SurfaceHolder.Callback
         try {
             cacelTimer();
             stopRecorder();
+            handler2.removeMessages(0x10);
             mWindowManager.removeView(viewPop);
             if (receiver != null) {
                 unregisterReceiver(receiver);
@@ -359,6 +575,57 @@ public class ScreenViewService extends Service implements SurfaceHolder.Callback
         } catch (Exception e) {
             MyLog.e("cdl", "===移除View error==" + e.toString());
         }
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.tv_1:
+                    if (call(SharedPerManager.getPhoneNum1()))
+                    tv_1.setText("正在拨打" + SharedPerManager.getPhoneName1().substring(0, 3));
+                break;
+            case R.id.tv_2:
+                if (call(SharedPerManager.getPhoneNum2()))
+                tv_2.setText("正在拨打" + SharedPerManager.getPhoneName2().substring(0, 3));
+                break;
+            case R.id.tv_3:
+                if (call(SharedPerManager.getPhoneNum()))
+                tv_3.setText("正在拨打" + SharedPerManager.getPhoneName().substring(0, 3));
+                break;
+            case R.id.tv_change1:
+                showDialog("请输入新的名称",R.id.tv_change1);
+                break;
+            case R.id.tv_change2:
+                showDialog("请输入新的名称",R.id.tv_change2);
+                break;
+            case R.id.tv_change3:
+                showDialog("请输入新的名称",R.id.tv_change3);
+                break;
+            case R.id.tv_phone1:
+                showDialog("请输入新的号码",R.id.tv_phone1);
+                break;
+            case R.id.tv_phone2:
+                showDialog("请输入新的号码",R.id.tv_phone2);
+                break;
+            case R.id.tv_phone3:
+                showDialog("请输入新的号码",R.id.tv_phone3);
+                break;
+            case R.id.tv_change_ps:
+                showDialog("请输入新的密码",R.id.tv_change_ps);
+                break;
+            case R.id.bt_cancel:
+                mWindowManager.removeView(settingView);
+                break;
+            case R.id.bt_ok:
+                mWindowManager.removeView(settingView);
+                tv_1.setText(SharedPerManager.getPhoneName1());
+                tv_2.setText(SharedPerManager.getPhoneName2());
+                tv_3.setText(SharedPerManager.getPhoneName());
+                break;
+
+        }
+
+
     }
 
     public class LocalBinder extends Binder {
@@ -379,18 +646,19 @@ public class ScreenViewService extends Service implements SurfaceHolder.Callback
         filter.addAction(AppInfo.HAND_UP_PHONE);
         filter.addAction(AppInfo.CALL_FROM_THER);
         filter.addAction(AppInfo.CALL_TO_PHONE_RING);
+        filter.addAction(AppInfo.EXIT_APP);
         registerReceiver(receiver, filter);
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(AppInfo.SD_PULLOUT);
         intentFilter.addAction(AppInfo.SD_INSERT);
         intentFilter.addDataScheme("file");
-        registerReceiver(receiver,intentFilter);
+        registerReceiver(receiver, intentFilter);
     }
 
-    private void makePhoneToPolice() {
+    private void makePhoneToPolice(String phoneNamber) {
         try {
             cacelTimer();  //取消计时，停止缩放界面
-            String str = "tel:" + SharedPerManager.getPhoneNum();
+            String str = "tel:" + phoneNamber;
             Intent intent = new Intent(Intent.ACTION_CALL);
             Uri data = Uri.parse(str);
             intent.setData(data);
@@ -468,10 +736,12 @@ public class ScreenViewService extends Service implements SurfaceHolder.Callback
                 case START_KINESCOPE:
                     stopRecorder();
                     startRecord();
-                    handler.sendEmptyMessageDelayed(START_KINESCOPE, 1000 * 60*60);
+                    handler.sendEmptyMessageDelayed(START_KINESCOPE, 1000 * 60 * 60);
                     break;
                 case EXIT_APP:
-                    sendBroadcast(new Intent("com.ys.exit.videoapp"));
+//                    sendBroadcast(new Intent("com.ys.exit.videoapp"));
+                    stopSelf(); // 先stopSelf，确保killProcess后service不会重启
+                    android.os.Process.killProcess(android.os.Process.myPid());
                     break;
             }
         }
@@ -565,7 +835,7 @@ public class ScreenViewService extends Service implements SurfaceHolder.Callback
                     }
                 }
             }
-            return null ;
+            return null;
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -581,7 +851,7 @@ public class ScreenViewService extends Service implements SurfaceHolder.Callback
     }
 
     //自动挂断
-    public static void endPhone(Context c,TelephonyManager tm) {
+    public static void endPhone(Context c, TelephonyManager tm) {
         try {
             Log.i(TAG, "endPhone");
             ITelephony iTelephony;
@@ -596,7 +866,9 @@ public class ScreenViewService extends Service implements SurfaceHolder.Callback
             e.printStackTrace();
         }
     }
+
     //检查设备是否有摄像头
+    @SuppressLint("UnsupportedChromeOsCameraSystemFeature")
     private boolean hasCamera(Context context) {
         Log.i(TAG, "hasCamera=============");
         if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
@@ -607,6 +879,7 @@ public class ScreenViewService extends Service implements SurfaceHolder.Callback
     }
 
     private static boolean cameraFront = false;
+
     private void initCamdera() {
         if (!hasCamera(getApplicationContext())) {
             //这台设备没有发现摄像头
@@ -626,34 +899,34 @@ public class ScreenViewService extends Service implements SurfaceHolder.Callback
             } else if (!cameraFront) {
                 cameraId = findBackFacingCamera();
             }
-            if (cameraId==-1){
+            if (cameraId == -1) {
                 Toast.makeText(getApplicationContext(), "没有找到摄像头，请连接好摄像头再进行录制", Toast.LENGTH_LONG).show();
-                handler.sendEmptyMessageDelayed(EXIT_APP,3000);
+                handler.sendEmptyMessageDelayed(EXIT_APP, 3000);
                 return;
-            }else {
+            } else {
                 try {
-                String path = "/sdcard/"+System.currentTimeMillis()+".mp4";
-                File fileVideo = new File(path);
-                if (fileVideo.exists()) {
-                    fileVideo.delete();
-                }
+                    String path = "/sdcard/" + System.currentTimeMillis() + ".mp4";
+                    File fileVideo = new File(path);
+                    if (fileVideo.exists()) {
+                        fileVideo.delete();
+                    }
                     fileVideo.createNewFile();
-                MyLog.e("cdl", "====开始录制===");
-                if (mRecorder == null) {
-                    mRecorder = new MediaRecorder(); // Create MediaRecorder
-                }
-                mRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
-                mRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-                mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-                mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-                mRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H263);
-                mRecorder.setVideoSize(640, 480);  //客户长形得摄像头
+                    MyLog.e("cdl", "====开始录制===");
+                    if (mRecorder == null) {
+                        mRecorder = new MediaRecorder(); // Create MediaRecorder
+                    }
+                    mRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
+                    mRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
+                    mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+                    mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+                    mRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H263);
+                    mRecorder.setVideoSize(640, 480);  //客户长形得摄像头
 //            mRecorder.setVideoSize(320, 240);
 //            mRecorder.setVideoFrameRate(10);
-                mRecorder.setPreviewDisplay(mSurfaceHolder.getSurface());
-                mRecorder.setOutputFile(url_file);
-                mRecorder.prepare();
-                mRecorder.start();
+                    mRecorder.setPreviewDisplay(mSurfaceHolder.getSurface());
+                    mRecorder.setOutputFile(url_file);
+                    mRecorder.prepare();
+                    mRecorder.start();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -679,11 +952,12 @@ public class ScreenViewService extends Service implements SurfaceHolder.Callback
                 break;
             }
         }
-        Log.i(TAG, "findFrontFacingCamera============="+cameraId);
-        if (cameraId==-1) {
+        Log.i(TAG, "findFrontFacingCamera=============" + cameraId);
+        if (cameraId == -1) {
         }
         return cameraId;
     }
+
     /**
      * 找后置摄像头,没有则返回-1
      *
@@ -702,11 +976,11 @@ public class ScreenViewService extends Service implements SurfaceHolder.Callback
                 break;
             }
         }
-        Log.i(TAG, "findBackFacingCamera============="+cameraId);
+        Log.i(TAG, "findBackFacingCamera=============" + cameraId);
         return cameraId;
     }
 
-    private void openCamera(){
+    private void openCamera() {
         stopRecorder();
         mCamera = android.hardware.Camera.open(0);//创建照相机对象
 //                mCamera.setDisplayOrientation(90);//调整方向
@@ -726,4 +1000,74 @@ public class ScreenViewService extends Service implements SurfaceHolder.Callback
             e.printStackTrace();
         }
     }
+
+
+    private boolean call(String phoneNameber) {
+        boolean ishasSimCard = SystemManagerUtil.ishasSimCard(ScreenViewService.this);
+        if (!ishasSimCard) {
+//            tv_desc_show.setText("当前没有SIM卡信息!");
+            MyToastView.getInstance().Toast(ScreenViewService.this,"当前没有SIM卡信息!");
+            cacelTimer();
+            if (isSizeBig) {
+                handler.sendEmptyMessageDelayed(MESSAGE_CACEL_POLICE, 3000);
+            }
+            return false;
+        }
+        makePhoneToPolice(phoneNameber);
+        return true;
+    }
+    View settingView;
+    TextView tv_change1,tv_change2,tv_change3,tv_change4,tv_phone1,tv_phone2,tv_phone3,tv_change_ps;
+    Button bt_cancel,bt_ok;
+    private void createSettingView() {
+        mWmParams = new WindowManager.LayoutParams();
+        mWindowManager = ((WindowManager) getApplication().getSystemService(Context.WINDOW_SERVICE));
+        mWmParams.type = WindowManager.LayoutParams.TYPE_PHONE;
+        mWmParams.format = WindowManager.LayoutParams.LAYOUT_CHANGED;
+        mWmParams.flags = WindowManager.LayoutParams.FORMAT_CHANGED;
+        mWmParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        mWmParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+        settingView = LayoutInflater.from(getApplication()).inflate(R.layout.view_setting, null);
+        audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+
+        tv_change1 = settingView.findViewById(R.id.tv_change1);
+        tv_change2 = settingView.findViewById(R.id.tv_change2);
+        tv_change3 = settingView.findViewById(R.id.tv_change3);
+        tv_change4 = settingView.findViewById(R.id.tv_change4);
+        tv_phone1 = settingView.findViewById(R.id.tv_phone1);
+        tv_phone2 = settingView.findViewById(R.id.tv_phone2);
+        tv_phone3 = settingView.findViewById(R.id.tv_phone3);
+        tv_change_ps = settingView.findViewById(R.id.tv_change_ps);
+        bt_cancel = settingView.findViewById(R.id.bt_cancel);
+        bt_ok = settingView.findViewById(R.id.bt_ok);
+
+        tv_change1.setText(SharedPerManager.getPhoneName1());
+        tv_change2.setText(SharedPerManager.getPhoneName2());
+        tv_change3.setText(SharedPerManager.getPhoneName());
+        tv_change4.setText("修改密码");
+        tv_phone1.setText(SharedPerManager.getPhoneNum1());
+        tv_phone2.setText(SharedPerManager.getPhoneNum2());
+        tv_phone3.setText(SharedPerManager.getPhoneNum());
+        tv_change_ps.setText(SharedPerManager.getPassword());
+        tv_change1.setOnClickListener(this);
+        tv_change2.setOnClickListener(this);
+        tv_change3.setOnClickListener(this);
+        tv_phone1.setOnClickListener(this);
+        tv_phone2.setOnClickListener(this);
+        tv_phone3.setOnClickListener(this);
+        tv_change_ps.setOnClickListener(this);
+        bt_cancel.setOnClickListener(this);
+        bt_ok.setOnClickListener(this);
+
+
+
+
+
+
+
+
+        mWindowManager.addView(settingView, mWmParams);
+        settingView.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+    }
+
 }

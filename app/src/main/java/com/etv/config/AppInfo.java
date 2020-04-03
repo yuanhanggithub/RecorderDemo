@@ -23,6 +23,7 @@ public class AppInfo {
     public static final String SD_INSERT ="android.intent.action.MEDIA_MOUNTED";//SD卡插入
     public static final String EXIT_APP ="com.ys.exit.videoapp";//退出app
     public static final String SHRINK_WINDOW ="com.ys.shrink.window";//退出app
+    public static final String START_SETTING ="com.ys.start.setting";//打开设置界面
     public static final String BASE_PATH_INNER = Environment.getExternalStorageDirectory().getPath();
 
     /***

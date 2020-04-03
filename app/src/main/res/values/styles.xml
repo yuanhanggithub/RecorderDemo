@@ -119,7 +119,7 @@
         <item name="android:layout_gravity">center_horizontal</item>
         <item name="android:layout_marginTop">10dp</item>
         <item name="android:textColor">@color/white</item>
-        <item name="android:textSize">20dp</item>
+        <item name="android:textSize">20sp</item>
     </style>
 
     <!--设置子菜单退出按钮Image layout-->
@@ -418,6 +418,17 @@
     <style name="PermissionAnimModal">
         <item name="android:windowEnterAnimation">@anim/modal_in</item>
         <item name="android:windowExitAnimation">@anim/modal_out</item>
+    </style>
+
+    <style name="text">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/rect_circle_red</item>
+        <item name="android:padding">@dimen/dimen_10</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">28sp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:singleLine">true</item>
     </style>
 
 

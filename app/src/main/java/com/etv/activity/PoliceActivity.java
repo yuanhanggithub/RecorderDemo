@@ -8,7 +8,7 @@ import android.view.KeyEvent;
 import com.etv.config.AppInfo;
 import com.etv.service.ScreenViewService;
 
-public class PoliceActivity extends BaseActivity {
+public class  PoliceActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle paramBundle) {
